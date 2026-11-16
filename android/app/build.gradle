@@ -1,0 +1,96 @@
+plugins {
+    id 'com.android.application' version '8.13.0'
+}
+
+android {
+    namespace 'com.casini.customize'
+    compileSdk 36
+    ndkVersion '30.0.16248370'
+
+    sourceSets.main {
+        jniLibs.srcDir layout.buildDirectory.dir('generated/rustJni')
+        assets.srcDir layout.buildDirectory.dir('generated/showroomAssets')
+    }
+
+    defaultConfig {
+        applicationId providers.gradleProperty('sampleApplicationId').getOrElse('com.casini.customize')
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../customize.keystore')
+            storePassword 'customize123'
+            keyAlias 'customize'
+            keyPassword 'customize123'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+// Build the native backend from the same Rust sources as the desktop server.
+def rustRoot = rootProject.projectDir.parentFile
+def nativeTargets = [
+    'arm64-v8a': 'aarch64-linux-android',
+    'x86_64': 'x86_64-linux-android'
+]
+def rustBuilds = nativeTargets.collect { abi, triple ->
+    tasks.register("buildRust_" + abi.replace('-', '_'), Exec) {
+        workingDir rustRoot
+        inputs.files(fileTree(new File(rustRoot, 'src')), new File(rustRoot, 'Cargo.toml'),
+                new File(rustRoot, 'Cargo.lock'), new File(rustRoot, 'index.html'))
+        outputs.file(new File(rustRoot, "target/${triple}/release/libcustomize.so"))
+        def toolchain = new File(android.sdkDirectory,
+                "ndk/${android.ndkVersion}/toolchains/llvm/prebuilt/linux-x86_64/bin")
+        environment "CARGO_TARGET_${triple.toUpperCase().replace('-', '_')}_LINKER",
+                new File(toolchain, "${triple}26-clang").absolutePath
+        environment 'RUSTFLAGS', '-C link-arg=-Wl,-z,max-page-size=16384'
+        // rusqlite compiles SQLite from C, so the cc crate needs the NDK compiler and archiver too.
+        environment "CC_${triple.replace('-', '_')}", new File(toolchain, "${triple}26-clang").absolutePath
+        environment "AR_${triple.replace('-', '_')}", new File(toolchain, 'llvm-ar').absolutePath
+        commandLine 'cargo', 'build', '--release', '--lib', '--target', triple
+    }
+}
+
+def packageRust = tasks.register('packageRust', Sync) {
+    dependsOn rustBuilds
+    into layout.buildDirectory.dir('generated/rustJni')
+    nativeTargets.each { abi, triple ->
+        from(new File(rustRoot, "target/${triple}/release/libcustomize.so")) {
+            into abi
+        }
+    }
+}
+def packageShowroom = tasks.register('packageShowroom', Sync) {
+    into layout.buildDirectory.dir('generated/showroomAssets/showroom')
+    from(rustRoot) { include 'index.html', 'style.css', 'api.js', 'app.js', 'auth.html', 'auth.js', 'admin.html', 'admin.js', 'pages.css', 'assets/**' }
+}
+tasks.named('preBuild').configure {
+    dependsOn packageRust, packageShowroom
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.17.0'
+    constraints {
+        implementation 'androidx.profileinstaller:profileinstaller:1.3.1'
+    }
+}

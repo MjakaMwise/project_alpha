@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Shop admin · Customize</title>
+  <meta name="description" content="Manage Customize shops, products and accounts.">
+  <link rel="stylesheet" href="pages.css">
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="brand" href="./"><span class="botanical-mark" aria-hidden="true"><i></i></span>Customize</a>
+    <nav>
+      <span id="who"></span>
+      <a href="./?backend=server">Shop</a>
+      <button id="logout" class="small" type="button" hidden>Log out</button>
+    </nav>
+  </header>
+
+  <main class="admin">
+    <section id="gate" class="gate" hidden>
+      <h1 id="gate-title">Admins only</h1>
+      <p id="gate-text" class="hint"></p>
+      <a id="gate-link" class="primary" href="auth.html?next=admin" style="display:inline-grid;place-items:center;min-height:44px;padding:0 18px;border-radius:999px;text-decoration:none">Log in</a>
+    </section>
+
+    <div id="console" hidden>
+      <div class="admin-head">
+        <h1>Shop admin</h1>
+        <div class="section-tabs" role="tablist" aria-label="Sections">
+          <button type="button" role="tab" id="tab-shops" aria-selected="true" aria-controls="shops-view">Shops</button>
+          <button type="button" role="tab" id="tab-orders" aria-selected="false" aria-controls="orders-view">Orders</button>
+          <button type="button" role="tab" id="tab-users" aria-selected="false" aria-controls="users-view">Users</button>
+        </div>
+      </div>
+
+      <div id="shops-view" role="tabpanel" aria-labelledby="tab-shops" style="display:grid;gap:22px;margin-top:22px">
+        <section class="panel" aria-labelledby="shops-title">
+          <div class="panel-head">
+            <h2 id="shops-title">Shops</h2>
+            <div class="toolbar">
+              <input id="shop-search" type="search" placeholder="Search shops or owners" aria-label="Search shops">
+              <button id="new-shop" class="primary" type="button">New shop</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Shop</th><th class="hide-narrow">Owner</th><th>Products</th><th>Status</th><th class="hide-narrow">Created</th><th><span hidden>Actions</span></th></tr></thead>
+              <tbody id="shop-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="products-panel" class="panel" aria-labelledby="products-title" hidden>
+          <div class="panel-head">
+            <h2 id="products-title">Products</h2>
+            <div class="toolbar">
+              <button id="new-product" class="primary" type="button">Add product</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th><span hidden>Image</span></th><th>Product</th><th class="hide-narrow">Category</th><th>Price</th><th class="hide-narrow">Height</th><th><span hidden>Actions</span></th></tr></thead>
+              <tbody id="product-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div id="orders-view" role="tabpanel" aria-labelledby="tab-orders" hidden style="display:grid;gap:22px;margin-top:22px">
+        <div class="order-counts" id="order-counts"></div>
+        <section class="panel" aria-labelledby="orders-title">
+          <div class="panel-head">
+            <h2 id="orders-title">Orders</h2>
+            <div class="toolbar">
+              <input id="order-search" type="search" placeholder="Order number, name or phone" aria-label="Search orders">
+            </div>
+          </div>
+          <div class="filters">
+            <label>Status<select id="order-status"><option value="">All</option><option value="active">In progress (confirmed to out for delivery)</option><option value="placed">Placed</option><option value="confirmed">Confirmed</option><option value="preparing">Preparing</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></label>
+            <label>Shop<select id="order-shop"><option value="">All shops</option></select></label>
+            <label>From<input id="order-from" type="date"></label>
+            <label>To<input id="order-to" type="date"></label>
+            <button id="order-clear" class="small" type="button">Clear filters</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Order</th><th class="hide-narrow">Placed</th><th>Customer</th><th class="hide-narrow">Items</th><th>Total</th><th>Status</th></tr></thead>
+              <tbody id="order-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div id="users-view" role="tabpanel" aria-labelledby="tab-users" hidden style="margin-top:22px">
+        <section class="panel" aria-labelledby="users-title">
+          <div class="panel-head">
+            <h2 id="users-title">Users</h2>
+            <div class="toolbar">
+              <input id="user-search" type="search" placeholder="Search name or email" aria-label="Search users">
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th class="hide-narrow">Joined</th></tr></thead>
+              <tbody id="user-rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="shop-dialog" aria-labelledby="shop-dialog-title">
+    <form id="shop-form" method="dialog" novalidate>
+      <h2 id="shop-dialog-title">New shop</h2>
+      <p class="message" role="alert" hidden></p>
+      <div class="form-grid">
+        <label>Name<input name="name" required maxlength="80"></label>
+        <label>Web address<input name="slug" maxlength="60" placeholder="made from the name" pattern="[a-z0-9-]+"></label>
+        <label class="wide">Description<textarea name="description" maxlength="500"></textarea></label>
+        <label>Owner<select name="owner_id"><option value="">No owner</option></select></label>
+        <label>Status<select name="status"><option value="active">Active</option><option value="suspended">Suspended</option></select></label>
+      </div>
+      <p class="hint">Assigning a shopper as owner makes them a shop owner. Suspended shops are hidden from the shop.</p>
+      <div class="form-actions">
+        <button type="button" data-close>Cancel</button>
+        <button class="primary" type="submit">Save shop</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="product-dialog" aria-labelledby="product-dialog-title">
+    <form id="product-form" method="dialog" novalidate>
+      <h2 id="product-dialog-title">Add product</h2>
+      <p class="message" role="alert" hidden></p>
+      <div class="form-grid">
+        <label>Name<input name="name" required maxlength="80"></label>
+        <label>Category<input name="type" required maxlength="40" list="categories" placeholder="Plants"></label>
+        <datalist id="categories"><option value="Plants"><option value="Flowers"><option value="Vases"><option value="Planters"><option value="Stands"><option value="Hanging"><option value="Dried"><option value="Room sets"></datalist>
+        <label>Price (KSh)<input name="price" type="number" min="1" max="10000000" step="1" required></label>
+        <label>Height (cm)<input name="height_cm" type="number" min="5" max="300" step="1" required></label>
+        <label>Vessel<input name="vessel" maxlength="80" placeholder="Ivory ceramic pot"></label>
+        <label>Size label<input name="size" maxlength="40" placeholder="made from the height"></label>
+        <label>Light / care<input name="light" maxlength="80" placeholder="Bright indirect light"></label>
+        <label>Room scale<input name="scale" type="number" min="0.05" max="1" step="0.01" value="0.3"></label>
+        <label class="wide">Description<textarea name="description" maxlength="500"></textarea></label>
+        <label class="wide">Tags (comma separated)<input name="tags" placeholder="green, foliage, ceramic"></label>
+        <label class="wide">Image<input name="image" maxlength="300" placeholder="uploads/… or assets/orchid.webp or https://…"></label>
+        <label class="wide">Upload an image (PNG, JPEG or WebP, up to 5 MB)<input name="file" type="file" accept="image/png,image/jpeg,image/webp"></label>
+      </div>
+      <div class="form-actions">
+        <button type="button" data-close>Cancel</button>
+        <button class="primary" type="submit">Save product</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="order-dialog" aria-labelledby="order-dialog-title">
+    <form method="dialog" id="order-form">
+      <div class="panel-head"><h2 id="order-dialog-title">Order</h2><button type="button" class="small" data-close aria-label="Close">Close</button></div>
+      <div id="order-detail"></div>
+      <div id="order-actions" class="order-actions">
+        <label class="wide">Note (optional, shown in the order history)<textarea id="order-note" maxlength="300" rows="2"></textarea></label>
+        <p class="message" role="alert" hidden></p>
+        <div class="form-actions">
+          <button id="order-cancel" class="danger" type="button">Cancel order</button>
+          <button id="order-next" class="primary" type="button">Mark as …</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <h2 id="confirm-title">Are you sure?</h2>
+      <p id="confirm-text" class="hint"></p>
+      <div class="form-actions">
+        <button value="cancel" type="submit">Cancel</button>
+        <button id="confirm-yes" class="primary" value="yes" type="submit">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

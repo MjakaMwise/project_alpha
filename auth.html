@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Log in · Customize</title>
+  <meta name="description" content="Log in or create your Customize account.">
+  <link rel="stylesheet" href="pages.css">
+  <script src="auth.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="brand" href="./"><span class="botanical-mark" aria-hidden="true"><i></i></span>Customize</a>
+    <nav><a href="./">Back to the shop</a></nav>
+  </header>
+  <main class="auth">
+    <section class="auth-card" aria-labelledby="auth-title">
+      <h1 id="auth-title">Welcome back</h1>
+      <div class="tabs" role="tablist" aria-label="Account">
+        <button type="button" role="tab" id="tab-login" aria-controls="login-form" aria-selected="true">Log in</button>
+        <button type="button" role="tab" id="tab-signup" aria-controls="signup-form" aria-selected="false">Create account</button>
+      </div>
+      <p id="auth-message" class="message" role="alert" hidden></p>
+      <form id="login-form" role="tabpanel" aria-labelledby="tab-login" novalidate>
+        <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
+        <button class="primary" type="submit">Log in</button>
+      </form>
+      <form id="signup-form" role="tabpanel" aria-labelledby="tab-signup" novalidate hidden>
+        <label>Name<input name="name" autocomplete="name" required maxlength="80"></label>
+        <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        <label>Password<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="128"></label>
+        <p class="hint">At least 8 characters. Your saves and orders on this device move into your account.</p>
+        <button class="primary" type="submit">Create account</button>
+      </form>
+      <p class="auth-foot">by CASINI</p>
+    </section>
+  </main>
+</body>
+</html>

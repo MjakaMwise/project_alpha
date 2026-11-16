@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#030407">
+  <meta name="description" content="Preview flowers and plants in your own space.">
+  <title>Customize — Botanical showroom</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="api.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <button id="discover-back" class="quiet" aria-label="Back" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+    </button>
+    <a class="brand" href="./"><span class="botanical-mark" aria-hidden="true"><i></i></span>Customize</a>
+    <div class="masthead-right">
+      <button id="open-search" class="masthead-action" aria-label="Search products">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+      </button>
+      <button id="nav-user" class="masthead-action" aria-label="Account">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>
+      </button>
+    </div>
+  </header>
+  <main class="shop-shell">
+    <section id="shop-page" class="shop-page" aria-labelledby="shop-title" hidden>
+      <header class="shop-greeting">
+        <h1 id="shop-title">Good evening</h1>
+        <p id="shop-sub">Preview plants and flowers in your space before you buy.</p>
+      </header>
+      <div class="shop-filter-bar">
+      <div id="shop-filters" class="shop-filters filters" aria-label="Filter catalog">
+        <button data-category="All" aria-pressed="true">All</button>
+        <button data-category="Plants" aria-pressed="false">Plants</button>
+        <button data-category="Flowers" aria-pressed="false">Flowers</button>
+        <button data-category="Vases" aria-pressed="false">Vases</button>
+        <button data-category="Planters" aria-pressed="false">Planters</button>
+        <button data-category="Stands" aria-pressed="false">Stands</button>
+        <button data-category="Hanging" aria-pressed="false">Hanging</button>
+        <button data-category="Dried" aria-pressed="false">Dried flowers</button>
+        <button data-category="Room sets" aria-pressed="false">Room sets</button>
+      </div>
+      <button class="saved-filter" data-category="Saved" aria-pressed="false" aria-label="Show saved only" title="Saved">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      </button>
+      </div>
+      <div id="shop-picks" class="row-head" hidden><b>Picked for you</b><span id="shop-picks-why"></span></div>
+      <div id="shop-grid" class="shop-grid"></div>
+    </section>
+    <section id="rooms-page" class="shop-page" aria-labelledby="rooms-title">
+      <header class="shop-heading"><h1 id="rooms-title">Choose a space</h1>
+      <button id="record-room" class="primary">Record a space</button></header>
+      <div id="rooms-grid" class="shop-grid"></div>
+    </section>
+    <section id="cart-page" class="shop-page" aria-labelledby="cart-title" hidden>
+      <header class="shop-heading"><h1 id="cart-title">Cart</h1></header>
+      <div id="cart-items"></div>
+    </section>
+    <section id="product-page" class="shop-page" aria-label="Product details" hidden></section>
+    <section id="discover-page" aria-label="Discover" hidden></section>
+    <section id="user-page" class="shop-page is-guest" aria-labelledby="user-title" hidden>
+      <header class="account-header">
+        <h1 id="user-title">Your account</h1>
+        <div class="account-profile" data-account-only>
+          <span id="account-avatar" aria-hidden="true"></span>
+          <button id="edit-account-name" class="quiet">Add name</button>
+        </div>
+        <div id="account-auth" class="account-auth"></div>
+      </header>
+      <div class="account-content">
+        <button id="account-cart" class="account-cart">View cart</button>
+        <div data-account-only>
+        <div id="account-stats" class="account-stats"></div>
+        <div class="row-head"><b>My spaces</b></div>
+        <div id="account-rooms" class="account-rooms"></div>
+        <div class="row-head account-orders-head"><b>My orders</b><button id="track-order" class="quiet" type="button">Track an order</button></div>
+        <div id="account-orders" class="account-orders"></div>
+        </div>
+        <h2 class="account-note">Saved</h2>
+        <div id="account-saved" class="account-saved"></div>
+        <button id="replay-tour" class="quiet" data-account-only><span>Take the tour</span></button>
+        <button id="history" class="quiet" data-account-only>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 1 3 6.7M3 12V6m0 6h6m3-5v5l3 2"/></svg>
+          <span>Activity</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+      </div>
+      <footer class="account-credit" data-account-only>by CASINI</footer>
+    </section>
+    <section id="workspace" aria-label="Space preview" hidden>
+      <div id="stage" class="stage" aria-label="Space photo">
+        <div id="pan" class="pan">
+          <img id="room" class="room" alt="" draggable="false">
+          <div id="placement" class="placement"></div>
+          <div id="scale-layer" class="scale-layer"></div>
+        </div>
+        <div id="room-cart" class="room-cart" hidden><span id="room-cart-info"></span><button id="room-cart-add" class="primary" type="button">Add all to cart</button></div>
+        <div class="placement-cue" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="9"/><path d="M16 2v8m0 12v8M2 16h8m12 0h8"/></svg>
+          <span id="placement-cue-label">Tap to place</span>
+        </div>
+      </div>
+      <div class="scene-controls">
+        <button id="close-room" class="glass room-icon room-back" aria-label="Back" title="Back">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg><span>Back</span>
+        </button>
+        <div class="room-tools">
+          <span id="room-label" class="glass room-label" hidden></span>
+          <button id="set-scale" class="glass" type="button">Set scale</button>
+        </div>
+        <button id="change-space" class="glass room-icon" aria-label="Change space" title="Change space">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v11h9m-5 0v-7h5m3 1h5m-2-2 2 2-2 2m2 3h-5m2-2-2 2 2 2"/></svg>
+        </button>
+      </div>
+      <div class="room-bottom">
+        <div id="angle-strip" class="angle-strip" role="group" aria-label="Space angles" hidden></div>
+        <div class="room-instructions">
+          <p id="room-step" role="status"></p>
+          <button id="add-room-point" class="room-icon" aria-label="Add placement point" title="Add placement point" aria-haspopup="dialog">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+    <div id="catalog-loading" class="catalog-loading" data-state="loading">
+      <span class="botanical-mark" aria-hidden="true"><i></i></span>
+      <p id="loading-message" role="status">Loading the catalog…</p>
+      <button id="retry-catalog" class="primary" hidden>Try again</button>
+    </div>
+    <div class="nav-scroll-blur" aria-hidden="true"></div>
+    <nav class="shop-nav" aria-label="Main navigation">
+      <button id="nav-shop" aria-label="Shop" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v10h16V10M3 10l2-6h14l2 6M3 10c0 3 4.5 3 4.5 0 0 3 4.5 3 4.5 0 0 3 4.5 3 4.5 0 0 3 4.5 3 4.5 0M10 20v-5h4v5"/></svg>
+        <span>Shop</span>
+      </button>
+      <button id="nav-discover" aria-label="Discover">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 8-2 6-6 2 2-6z"/></svg>
+        <span>Discover</span>
+      </button>
+      <button id="nav-rooms" aria-label="Spaces">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg>
+        <span>Spaces</span>
+      </button>
+      <button id="nav-cart" aria-label="Cart">
+        <span class="nav-cart-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h3l3 12h11l2-8H6"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+          <span id="cart-count" hidden></span>
+        </span>
+        <span>Cart</span>
+      </button>
+    </nav>
+  </main>
+  <div id="intro" class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" data-step="start" hidden>
+    <div class="intro-room" aria-hidden="true"></div>
+    <div class="intro-stage" aria-hidden="true">
+      <div class="intro-device">
+        <div class="intro-phone">
+          <div class="intro-screen">
+            <div class="intro-home">
+              <span class="intro-clock">9:41</span>
+              <div class="intro-apps"><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                <span class="intro-app"><span class="intro-app-icon"><span class="botanical-mark"><i></i></span></span><small>Customize</small></span>
+              </div>
+            </div>
+            <div class="intro-camera">
+              <div class="intro-shot"></div>
+              <span class="intro-corners"></span>
+              <span class="intro-shutter"></span>
+            </div>
+            <div class="intro-flash"></div>
+          </div>
+          <span class="intro-notch"></span>
+        </div>
+      </div>
+      <div class="intro-tray">
+        <span data-product="orchid"><img src="assets/orchid.webp" alt=""></span>
+        <span data-product="tulips"><img src="assets/tulips.webp" alt=""></span>
+        <span data-product="fern"><img src="assets/fern.webp" alt=""></span>
+      </div>
+      <span class="intro-spot"></span>
+      <img class="intro-placed" src="assets/orchid.webp" alt="">
+      <span class="intro-pointer"><span class="intro-dot"></span><span class="intro-ripple"></span></span>
+    </div>
+    <div class="intro-fade" aria-hidden="true"></div>
+    <div class="intro-logo"><span class="botanical-mark" aria-hidden="true"><i></i></span>Customize</div>
+    <button id="intro-skip" class="intro-skip" type="button" hidden>Skip</button>
+    <div class="intro-copy">
+      <h1 id="intro-title">Visualize <em>before</em> you buy.</h1>
+      <p>See flowers, indoor plants and décor in your own space before you order.</p>
+      <p class="intro-cta">Let’s get started together</p>
+    </div>
+    <button id="intro-go" class="intro-go" type="button" aria-label="Let’s get started together"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+  </div>
+  <div id="notice" role="status" hidden></div>
+  <dialog id="product-carousel" class="product-carousel" aria-label="Compare products">
+    <div class="carousel-layout">
+      <button id="carousel-close" class="carousel-close glass" aria-label="Close product carousel">×</button>
+      <label class="carousel-search">
+        <input id="carousel-search" type="search" aria-label="Search products" placeholder="Search products">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/>
+        </svg>
+      </label>
+      <div id="carousel-results" class="carousel-results shop-grid" aria-label="Search results" hidden></div>
+      <div id="carousel-display" class="carousel-display"></div>
+      <div class="carousel-caption">
+        <button id="carousel-previous" class="glass carousel-icon" aria-label="Previous product">‹</button>
+        <div class="carousel-product" aria-live="polite">
+          <h2 id="carousel-name"></h2>
+          <p id="carousel-price"></p>
+        </div>
+        <button id="carousel-next" class="glass carousel-icon" aria-label="Next product">›</button>
+      </div>
+      <div class="carousel-actions">
+        <button id="carousel-try" class="primary" hidden>Try it</button>
+        <button id="carousel-place" class="primary">Place in space</button>
+        <button id="carousel-save" class="glass carousel-icon heart-toggle" aria-label="Save" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+        </button>
+        <button id="carousel-cart" class="glass carousel-icon" aria-label="Add to cart">
+          <span class="cart-symbol" aria-hidden="true"></span>
+        </button>
+      </div>
+      <p id="carousel-feedback" class="carousel-feedback" role="status"></p>
+    </div>
+  </dialog>
+  <dialog id="item-sheet" class="item-sheet" aria-label="Placed product"></dialog>
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div class="dialog-head"><h2 id="modal-title"></h2><button class="quiet" id="close" aria-label="Close dialog">×</button></div>
+    <div id="modal-content"></div>
+  </dialog>
+</body>
+</html>
